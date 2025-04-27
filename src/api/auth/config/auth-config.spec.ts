@@ -179,6 +179,7 @@ describe('AuthConfig', () => {
 
     it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not set', async () => {
       delete process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
+      console.log('hehe');
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
 
