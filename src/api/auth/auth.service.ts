@@ -277,4 +277,21 @@ export class AuthService {
       tokenExpires,
     } as Token;
   }
+
+  async validateGoogleUser(data: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string;
+    password: string;
+  }): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: { email: data.email },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
 }

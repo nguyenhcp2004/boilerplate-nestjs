@@ -1,3 +1,4 @@
+import { UserOauthAccountEntity } from '@/api/user/entities/user-oauth-account.entity';
 import { QueueName, QueuePrefix } from '@/constants/job.constant';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
@@ -11,7 +12,7 @@ import { AuthService } from './auth.service';
 @Module({
   imports: [
     UserModule,
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, UserOauthAccountEntity]),
     JwtModule.register({}),
     BullModule.registerQueue({
       name: QueueName.EMAIL,

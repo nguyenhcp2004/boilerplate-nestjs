@@ -40,6 +40,18 @@ class EnvironmentVariablesValidator {
   @IsNotEmpty()
   @IsMs()
   AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AUTH_GOOGLE_CLIENT_ID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AUTH_GOOGLE_CLIENT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  AUTH_GOOGLE_CALLBACK_URL: string;
 }
 
 export default registerAs<AuthConfig>('auth', () => {
@@ -55,5 +67,8 @@ export default registerAs<AuthConfig>('auth', () => {
     forgotExpires: process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN,
     confirmEmailSecret: process.env.AUTH_CONFIRM_EMAIL_SECRET,
     confirmEmailExpires: process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN,
+    googleClientId: process.env.AUTH_GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,
+    googleCallbackUrl: process.env.AUTH_GOOGLE_CALLBACK_URL,
   };
 });

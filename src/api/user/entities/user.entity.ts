@@ -1,4 +1,5 @@
 import { PostEntity } from '@/api/post/entities/post.entity';
+import { UserOauthAccountEntity } from '@/api/user/entities/user-oauth-account.entity';
 import { Uuid } from '@/common/types/common.type';
 import { AbstractEntity } from '@/database/entities/abstract.entity';
 import { hashPassword as hashPass } from '@/utils/password.util';
@@ -54,6 +55,12 @@ export class UserEntity extends AbstractEntity {
     default: null,
   })
   deletedAt: Date;
+
+  @Column({ default: '' })
+  name?: string;
+
+  @OneToMany(() => UserOauthAccountEntity, (oauthAccount) => oauthAccount.user)
+  oAuthAccounts: UserOauthAccountEntity[];
 
   @OneToMany(() => SessionEntity, (session) => session.user)
   sessions?: SessionEntity[];

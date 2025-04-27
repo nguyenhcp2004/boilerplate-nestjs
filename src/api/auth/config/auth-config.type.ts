@@ -7,4 +7,7 @@ export type AuthConfig = {
   forgotExpires: string;
   confirmEmailSecret: string;
   confirmEmailExpires: string;
+  googleClientId: string;
+  googleClientSecret: string;
+  googleCallbackUrl: string;
 };
