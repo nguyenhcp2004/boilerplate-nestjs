@@ -176,5 +176,20 @@ describe('AuthConfig', () => {
       process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN = 'invalid';
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
+
+    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not set', async () => {
+      delete process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
+      await expect(async () => await authConfig()).rejects.toThrow(Error);
+    });
+
+    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not a valid ms', async () => {
+      process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN = 'invalid';
+      await expect(async () => await authConfig()).rejects.toThrow(Error);
+    });
+
+    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not set', async () => {
+      delete process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
+      await expect(async () => await authConfig()).rejects.toThrow(Error);
+    });
   });
 });
