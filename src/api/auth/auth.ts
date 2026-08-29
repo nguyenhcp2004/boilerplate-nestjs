@@ -67,6 +67,11 @@ export const auth = betterAuth({
   // Sessions, verification tokens, and rate-limit counters live in Redis
   // (docs default when secondaryStorage is set). The Postgres session table
   // stays in place but is no longer written for cookie sessions.
+  //
+  // Deliberately NOT set: session.storeSessionInDatabase /
+  // session.preserveSessionInDatabase. Either one re-adds a Postgres write to
+  // the sign-in hot path (dual write) to keep ended-session tombstones for
+  // audit. Flip both on only if session audit trails become a requirement.
   secondaryStorage: redisStorage({
     client: new Redis({
       host: process.env.REDIS_HOST,
