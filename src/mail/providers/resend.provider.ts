@@ -1,6 +1,7 @@
 import { MailProviderId } from '@/constants/mail.constant';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
+import { AxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import {
   MailProvider,
@@ -31,33 +32,45 @@ export class ResendProvider extends MailProvider {
   }
 
   async send(options: SendMailOptions): Promise<SendMailResult> {
-    const response = await firstValueFrom(
-      this.httpService.post<ResendSendResponse>(
-        `${this.baseUrl.replace(/\/+$/, '')}/emails`,
-        {
-          from: options.from,
-          to: options.to,
-          subject: options.subject,
-          html: options.html,
-          ...(options.text && { text: options.text }),
-        },
-        {
-          headers: { Authorization: `Bearer ${this.apiKey}` },
-        },
-      ),
-    );
-
-    if (response.status < 200 || response.status >= 300) {
-      const detail = response.data?.message ?? 'unknown error';
-      this.logger.error(
-        `resend send failed: status=${response.status} message=${detail}`,
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post<ResendSendResponse>(
+          `${this.baseUrl.replace(/\/+$/, '')}/emails`,
+          {
+            from: options.from,
+            to: options.to,
+            subject: options.subject,
+            html: options.html,
+            ...(options.text && { text: options.text }),
+          },
+          {
+            headers: { Authorization: `Bearer ${this.apiKey}` },
+          },
+        ),
       );
-      throw new Error(`resend: ${detail} (status ${response.status})`);
-    }
 
-    return {
-      id: response.data?.id ?? '',
-      provider: MailProviderId.RESEND,
-    };
+      if (response.status < 200 || response.status >= 300) {
+        throw this.sendError(response.status, response.data);
+      }
+
+      return {
+        id: response.data?.id ?? '',
+        provider: MailProviderId.RESEND,
+      };
+    } catch (error) {
+      if (error instanceof AxiosError && error.response) {
+        throw this.sendError(
+          error.response.status,
+          error.response.data as ResendSendResponse,
+        );
+      }
+      throw error;
+    }
+  }
+
+  private sendError(status: number, data?: ResendSendResponse): Error {
+    const detail = data?.message ?? data?.name ?? 'unknown error';
+    this.logger.error(`resend send failed: status=${status} message=${detail}`);
+    return new Error(`resend: ${detail} (status ${status})`);
   }
 }
