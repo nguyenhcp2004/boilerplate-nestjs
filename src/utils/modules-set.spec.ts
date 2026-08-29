@@ -31,7 +31,7 @@ describe('generateModulesSet', () => {
         expect.any(Object), // TypeOrmModule
         expect.any(Object), // I18nModule
         expect.any(Object), // LoggerModule
-        MailModule,
+        expect.objectContaining({ module: MailModule }), // MailModule (dynamic)
       ]),
     );
   });
@@ -66,7 +66,7 @@ describe('generateModulesSet', () => {
         expect.any(Object), // TypeOrmModule
         expect.any(Object), // I18nModule
         expect.any(Object), // LoggerModule
-        MailModule,
+        expect.objectContaining({ module: MailModule }), // MailModule (dynamic)
       ]),
     );
   });
