@@ -1,6 +1,5 @@
 import {
   EmailField,
-  PasswordField,
   StringField,
   StringFieldOptional,
 } from '@/decorators/field.decorators';
@@ -14,9 +13,6 @@ export class CreateUserReqDto {
 
   @EmailField()
   email: string;
-
-  @PasswordField()
-  password: string;
 
   @StringFieldOptional()
   bio?: string;

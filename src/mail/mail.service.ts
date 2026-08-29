@@ -16,15 +16,24 @@ export class MailService {
     private readonly options: MailModuleOptions,
   ) {}
 
-  async sendEmailVerification(email: string, token: string) {
-    // Please replace the URL with your own frontend URL
-    const url = `${this.configService.get('app.url', { infer: true })}/api/v1/auth/verify/email?token=${token}`;
-
+  async sendEmailVerification(email: string, url: string) {
     await this.mailProvider.send({
       to: email,
       subject: 'Email Verification',
       from: this.options.defaults.from,
       html: this.renderer.render('email-verification', {
+        email: email,
+        url: url,
+      }),
+    });
+  }
+
+  async sendForgotPassword(email: string, url: string) {
+    await this.mailProvider.send({
+      to: email,
+      subject: 'Reset your password',
+      from: this.options.defaults.from,
+      html: this.renderer.render('forgot-password', {
         email: email,
         url: url,
       }),

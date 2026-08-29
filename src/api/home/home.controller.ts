@@ -1,11 +1,10 @@
 import { ApiPublic } from '@/decorators/http.decorators';
-import { Public } from '@/decorators/public.decorator';
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @Controller('/')
 export class HomeController {
-  @Get()
-  @Public()
+  @AllowAnonymous()
   @ApiPublic({ summary: 'Home' })
   home() {
     return 'Welcome to the API';

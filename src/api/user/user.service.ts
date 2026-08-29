@@ -2,14 +2,12 @@ import { CursorPaginationDto } from '@/common/dto/cursor-pagination/cursor-pagin
 import { CursorPaginatedDto } from '@/common/dto/cursor-pagination/paginated.dto';
 import { OffsetPaginatedDto } from '@/common/dto/offset-pagination/paginated.dto';
 import { Uuid } from '@/common/types/common.type';
-import { SYSTEM_USER_ID } from '@/constants/app.constant';
 import { ErrorCode } from '@/constants/error-code.constant';
 import { ValidationException } from '@/exceptions/validation.exception';
 import { buildPaginator } from '@/utils/cursor-pagination';
 import { paginate } from '@/utils/offset-pagination';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import assert from 'assert';
 import { plainToInstance } from 'class-transformer';
 import { Repository } from 'typeorm';
 import { CreateUserReqDto } from './dto/create-user.req.dto';
@@ -29,7 +27,7 @@ export class UserService {
   ) {}
 
   async create(dto: CreateUserReqDto): Promise<UserResDto> {
-    const { username, email, password, bio, image } = dto;
+    const { username, email, bio, image } = dto;
 
     // check uniqueness of username/email
     const user = await this.userRepository.findOne({
@@ -50,11 +48,8 @@ export class UserService {
     const newUser = new UserEntity({
       username,
       email,
-      password,
       bio,
       image,
-      createdBy: SYSTEM_USER_ID,
-      updatedBy: SYSTEM_USER_ID,
     });
 
     const savedUser = await this.userRepository.save(newUser);
@@ -103,12 +98,10 @@ export class UserService {
 
     return new CursorPaginatedDto(plainToInstance(UserResDto, data), metaDto);
   }
-
   async findOne(id: Uuid): Promise<UserResDto> {
-    assert(id, 'id is required');
     const user = await this.userRepository.findOneByOrFail({ id });
 
-    return user.toDto(UserResDto);
+    return plainToInstance(UserResDto, user);
   }
 
   async update(id: Uuid, updateUserDto: UpdateUserReqDto) {
@@ -116,7 +109,6 @@ export class UserService {
 
     user.bio = updateUserDto.bio;
     user.image = updateUserDto.image;
-    user.updatedBy = SYSTEM_USER_ID;
 
     await this.userRepository.save(user);
   }

@@ -1,6 +1,7 @@
 import { QueueName, QueuePrefix } from '@/constants/job.constant';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
+import { EmailQueueBridge } from './email-queue.bridge';
 import { EmailQueueEvents } from './email-queue.events';
 import { EmailQueueService } from './email-queue.service';
 import { EmailProcessor } from './email.processor';
@@ -17,6 +18,11 @@ import { EmailProcessor } from './email.processor';
       },
     }),
   ],
-  providers: [EmailQueueService, EmailProcessor, EmailQueueEvents],
+  providers: [
+    EmailQueueBridge,
+    EmailQueueService,
+    EmailProcessor,
+    EmailQueueEvents,
+  ],
 })
 export class EmailQueueModule {}

@@ -1,19 +1,22 @@
-import { UserOauthAccountEntity } from '@/api/user/entities/user-oauth-account.entity';
 import { QueueName, QueuePrefix } from '@/constants/job.constant';
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule as BetterAuthModule } from '@thallesp/nestjs-better-auth';
 import { UserEntity } from '../user/entities/user.entity';
-import { UserModule } from '../user/user.module';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 
 @Module({
   imports: [
-    UserModule,
-    TypeOrmModule.forFeature([UserEntity, UserOauthAccountEntity]),
-    JwtModule.register({}),
+    BetterAuthModule.forRoot({
+      // Re-adds the body parsers disabled in main.ts (bodyParser: false),
+      // required so better-auth receives the raw request body.
+      bodyParser: {
+        json: { limit: '2mb' },
+        urlencoded: { limit: '2mb', extended: true },
+        rawBody: true,
+      },
+    }),
+    TypeOrmModule.forFeature([UserEntity]),
     BullModule.registerQueue({
       name: QueueName.EMAIL,
       prefix: QueuePrefix.AUTH,
@@ -24,7 +27,5 @@ import { AuthService } from './auth.service';
       },
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
 })
 export class AuthModule {}

@@ -7,19 +7,19 @@ import {
 } from '@nestjs/common';
 import {
   ApiBasicAuth,
-  ApiBearerAuth,
+  ApiCookieAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiSecurity,
 } from '@nestjs/swagger';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 import { STATUS_CODES } from 'http';
-import { Public } from './public.decorator';
 import { ApiPaginatedResponse } from './swagger.decorators';
 
 type ApiResponseType = number;
-type ApiAuthType = 'basic' | 'api-key' | 'jwt';
+type ApiAuthType = 'basic' | 'api-key' | 'session';
 type PaginationType = 'offset' | 'cursor';
 
 interface IApiOptions<T extends Type<any>> {
@@ -64,7 +64,7 @@ export const ApiPublic = (options: IApiPublicOptions = {}): MethodDecorator => {
   );
 
   return applyDecorators(
-    Public(),
+    AllowAnonymous(),
     ApiOperation({ summary: options?.summary }),
     HttpCode(options.statusCode || defaultStatusCode),
     isPaginated ? ApiPaginatedResponse(ok) : ApiOkResponse(ok),
@@ -88,7 +88,7 @@ export const ApiAuth = (options: IApiAuthOptions = {}): MethodDecorator => {
     description: options?.description ?? 'OK',
     paginationType: options.paginationType || 'offset',
   };
-  const auths = options.auths || ['jwt'];
+  const auths = options.auths || ['session'];
 
   const errorResponses = (options.errorResponses || defaultErrorResponses)?.map(
     (statusCode) =>
@@ -105,8 +105,8 @@ export const ApiAuth = (options: IApiAuthOptions = {}): MethodDecorator => {
         return ApiBasicAuth();
       case 'api-key':
         return ApiSecurity('Api-Key');
-      case 'jwt':
-        return ApiBearerAuth();
+      case 'session':
+        return ApiCookieAuth('better-auth.session_token');
     }
   });
 

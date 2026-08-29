@@ -6,7 +6,11 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(\\.pnpm/)?(@thallesp\\+nestjs-better-auth|@thallesp/nestjs-better-auth))"
+  ],
   "moduleNameMapper": {
+    "^@thallesp/nestjs-better-auth$": "<rootDir>/test/shims/thallesp-nestjs-better-auth.cjs",
     "^@/api(.*)$": "<rootDir>/src/api$1",
     "^@/background(.*)$": "<rootDir>/src/background$1",
     "^@/common(.*)$": "<rootDir>/src/common$1",
