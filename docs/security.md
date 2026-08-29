@@ -8,30 +8,23 @@ Ensuring the security of your application is paramount. This document outlines t
 
 ## Authentication
 
-Authentication is the process of verifying the identity of a user or system. This project uses JSON Web Tokens (JWT) for stateless authentication. Users are required to log in with their credentials, after which they receive a token that must be included in the header of subsequent requests.
+Authentication is handled by [Better Auth](https://www.better-auth.com/), mounted through [`@thallesp/nestjs-better-auth`](https://github.com/ThallesP/nestjs-better-auth). The Better Auth handler is exposed at `/api/auth/*` and uses HttpOnly cookie sessions (`better-auth.session_token`). All routes are protected by a global `AuthGuard` unless annotated with `@AllowAnonymous()` or `@OptionalAuth()`.
+
+Supported flows:
+
+- Email + password (`/api/auth/sign-up/email`, `/api/auth/sign-in/email`, `/api/auth/sign-out`)
+- Google OAuth (`/api/auth/sign-in/social`)
+- Email verification and password reset — emails are enqueued through BullMQ and sent by the mail module
+
+Credentials are stored in the `account` table (provider `credential`); Better Auth hashes passwords with scrypt. The `user` table is shared between Better Auth and the application (TypeORM `UserEntity`), with `username`/`bio` as additional fields.
 
 ## Authorization
 
-Authorization is the process of determining if a user has permission to perform a certain action or access a specific resource. This project implements role-based access control (RBAC) to manage user permissions. Each user is assigned one or more roles, and each role is associated with a set of permissions.
+Authorization is the process of determining if a user has permission to perform a certain action or access a specific resource. Role-based access control is available via Better Auth plugins (see the Better Auth [admin](https://www.better-auth.com/docs/plugins/admin) and [organization](https://www.better-auth.com/docs/plugins/organization) docs); the NestJS wrapper provides `@Roles()`, `@OrgRoles()`, and permission decorators.
 
 ## Encryption and Hashing
 
-### Hashing
-
-For hashing, we use the [argon2](https://www.npmjs.com/package/argon2) package, which is currently considered one of the most secure hashing algorithms. It is used primarily for hashing passwords before they are stored in the database. Here's a basic example of how to hash a password with argon2:
-
-```ts title="src/utils/password.util.ts"
-import argon2 from 'argon2';
-
-export const hashPassword = async (password: string): Promise<string> => {
-  try {
-    return await argon2.hash(password);
-  } catch (err) {
-    console.error(err);
-    throw new Error('Can not hash password.');
-  }
-};
-```
+Password hashing is owned by Better Auth (scrypt, stored in the `account` table). No application-level password hashing code remains.
 
 ## Helmet
 

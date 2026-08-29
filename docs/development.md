@@ -74,18 +74,15 @@ MAIL_DEFAULT_EMAIL=noreply@example.com
 MAIL_DEFAULT_NAME=No Reply
 MAIL_CLIENT_PORT=1080
 
-##== Authentication
-AUTH_JWT_SECRET=secret
-AUTH_JWT_TOKEN_EXPIRES_IN=1d
-AUTH_REFRESH_SECRET=secret_for_refresh
-AUTH_REFRESH_TOKEN_EXPIRES_IN=365d
-AUTH_FORGOT_SECRET=secret_for_forgot
-AUTH_FORGOT_TOKEN_EXPIRES_IN=7d
-AUTH_CONFIRM_EMAIL_SECRET=secret_for_confirm_email
-AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN=1d
+##== Authentication (Better Auth)
+BETTER_AUTH_SECRET=please-generate-with-openssl-rand-base64-32
+BETTER_AUTH_URL=http://localhost:3000
+AUTH_GOOGLE_CLIENT_ID=
+AUTH_GOOGLE_CLIENT_SECRET=
 ```
 
-:::
+::::
+
 
 #### Environment variables
 
@@ -142,14 +139,10 @@ For local development, you can use [MailDev](https://github.com/maildev/maildev)
 
 #### Authentication variables
 
-- `AUTH_JWT_SECRET`: The JWT secret key.
-- `AUTH_JWT_TOKEN_EXPIRES_IN`: JWT token expiration time (e.g., `15m`, `1h`, `1d`, `365d`). Should be short for security.
-- `AUTH_REFRESH_SECRET`: The refresh token secret key.
-- `AUTH_REFRESH_TOKEN_EXPIRES_IN`: Refresh token expiration time. Should be long for user convenience.
-- `AUTH_FORGOT_SECRET`: The forgot password token secret key.
-- `AUTH_FORGOT_TOKEN_EXPIRES_IN`: Forgot password token expiration time. Should be short for security.
-- `AUTH_CONFIRM_EMAIL_SECRET`: The email confirmation token secret key.
-- `AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN`: Email confirmation token expiration time. Should be short for security.
+- `BETTER_AUTH_SECRET`: The Better Auth secret key, used for encryption and hashing. Generate with `openssl rand -base64 32`; must be at least 32 characters.
+- `BETTER_AUTH_URL`: The base URL of the app (e.g., `http://localhost:3000`). Used by Better Auth for callbacks and redirects.
+- `AUTH_GOOGLE_CLIENT_ID`: The Google OAuth client ID. The callback URL is `${BETTER_AUTH_URL}/api/auth/oauth2/callback/google`.
+- `AUTH_GOOGLE_CLIENT_SECRET`: The Google OAuth client secret.
 
 ### Running the project
 
