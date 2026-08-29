@@ -1,6 +1,8 @@
 import type { IEmailJob } from '@/common/interfaces/job.interface';
 import { JobName } from '@/constants/job.constant';
+import { redisStorage } from '@better-auth/redis-storage';
 import { betterAuth } from 'better-auth';
+import { Redis } from 'ioredis';
 import { Pool } from 'pg';
 
 /**
@@ -60,6 +62,19 @@ export const auth = betterAuth({
     user: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
+  }),
+
+  // Sessions, verification tokens, and rate-limit counters live in Redis
+  // (docs default when secondaryStorage is set). The Postgres session table
+  // stays in place but is no longer written for cookie sessions.
+  secondaryStorage: redisStorage({
+    client: new Redis({
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      password: process.env.REDIS_PASSWORD,
+      tls: process.env.REDIS_TLS_ENABLED === 'true' ? {} : undefined,
+    }),
+    keyPrefix: 'better-auth:',
   }),
 
   advanced: {

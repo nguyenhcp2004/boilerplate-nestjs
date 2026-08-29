@@ -18,6 +18,10 @@ Supported flows:
 
 Credentials are stored in the `account` table (provider `credential`); Better Auth hashes passwords with scrypt. The `user` table is shared between Better Auth and the application (TypeORM `UserEntity`), with `username`/`bio` as additional fields.
 
+### Secondary storage (Redis)
+
+Sessions, verification tokens (email verification, password reset), and rate-limit counters are stored in Redis via [`@better-auth/redis-storage`](https://better-auth.com/docs/concepts/database#redis-storage) (ioredis), using the `REDIS_*` environment variables and the `better-auth:` key prefix. Auth checks are a single Redis `GET` — the Postgres `session`/`verification` tables are no longer written for these flows. Signed-out sessions are removed from Redis immediately; a Redis data loss logs everyone out (the docker Redis has an RDB snapshot volume for mitigation).
+
 ## Authorization
 
 Authorization is the process of determining if a user has permission to perform a certain action or access a specific resource. Role-based access control is available via Better Auth plugins (see the Better Auth [admin](https://www.better-auth.com/docs/plugins/admin) and [organization](https://www.better-auth.com/docs/plugins/organization) docs); the NestJS wrapper provides `@Roles()`, `@OrgRoles()`, and permission decorators.

@@ -7,6 +7,7 @@
   },
   "moduleNameMapper": {
     "^better-auth$": "<rootDir>/../test/shims/better-auth.cjs",
+    "^@better-auth/redis-storage$": "<rootDir>/../test/shims/better-auth-redis-storage.cjs",
     "^@thallesp/nestjs-better-auth$": "<rootDir>/../test/shims/thallesp-nestjs-better-auth.cjs",
     "^@/api(.*)$": "<rootDir>/api$1",
     "^@/background(.*)$": "<rootDir>/background$1",
