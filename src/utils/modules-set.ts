@@ -102,6 +102,18 @@ function generateModulesSet() {
     useFactory: loggerFactory,
   });
 
+  const mailModule = MailModule.forRootAsync({
+    useFactory: (configService: ConfigService<AllConfigType>) => ({
+      provider: configService.get('mail.provider', { infer: true }),
+      defaults: {
+        from: `"${configService.get('mail.defaultName', { infer: true })}" <${configService.get('mail.defaultEmail', { infer: true })}>`,
+      },
+      smtp: configService.get('mail.smtp', { infer: true }),
+      resend: configService.get('mail.resend', { infer: true }),
+    }),
+    inject: [ConfigService],
+  });
+
   const cacheModule = CacheModule.registerAsync({
     imports: [ConfigModule],
     useFactory: async (configService: ConfigService<AllConfigType>) => {
@@ -136,7 +148,7 @@ function generateModulesSet() {
         dbModule,
         i18nModule,
         loggerModule,
-        MailModule,
+        mailModule,
       ];
       break;
     case 'api':
@@ -147,7 +159,7 @@ function generateModulesSet() {
         dbModule,
         i18nModule,
         loggerModule,
-        MailModule,
+        mailModule,
       ];
       break;
     case 'background':
@@ -158,6 +170,7 @@ function generateModulesSet() {
         dbModule,
         i18nModule,
         loggerModule,
+        mailModule,
       ];
       break;
     default:

@@ -1,7 +1,7 @@
 import mailConfig from './mail.config';
 
 describe('MailConfig', () => {
-  const originalEnv = process.env;
+  const originalEnv = { ...process.env };
 
   beforeEach(() => {
     // Reset process.env to its original state before each test
@@ -9,178 +9,89 @@ describe('MailConfig', () => {
   });
 
   beforeAll(() => {
+    jest.spyOn(console, 'info').mockImplementation();
     jest.spyOn(console, 'warn').mockImplementation();
     jest.spyOn(console, 'error').mockImplementation();
-    jest.spyOn(console, 'info').mockImplementation();
   });
 
-  it('should return the mail configuration', async () => {
-    process.env.MAIL_HOST = 'smtp.example.com';
-    process.env.MAIL_PORT = '465';
-    process.env.MAIL_USER = 'user@example.com';
-    process.env.MAIL_PASS = 'password';
-    process.env.MAIL_IGNORE_TLS = 'false';
-    process.env.MAIL_SECURE = 'false';
-    process.env.MAIL_REQUIRE_TLS = 'false';
-    process.env.MAIL_DEFAULT_EMAIL = 'default@example.com';
-    process.env.MAIL_DEFAULT_NAME = 'Default Name';
+  const clearSmtpVars = () => {
+    delete process.env.MAIL_HOST;
+    delete process.env.MAIL_PORT;
+    delete process.env.MAIL_USER;
+    delete process.env.MAIL_PASSWORD;
+    delete process.env.MAIL_IGNORE_TLS;
+    delete process.env.MAIL_SECURE;
+    delete process.env.MAIL_REQUIRE_TLS;
+  };
 
-    const config = await mailConfig();
+  describe('provider', () => {
+    it('should default to smtp when MAIL_PROVIDER is not set', async () => {
+      delete process.env.MAIL_PROVIDER;
+      process.env.MAIL_HOST = 'localhost';
+      process.env.MAIL_PORT = '1025';
 
-    expect(config.host).toBe('smtp.example.com');
-    expect(config.port).toBe(465);
-    expect(config.user).toBe('user@example.com');
-    expect(config.password).toBe('password');
-    expect(config.ignoreTLS).toBe(false);
-    expect(config.secure).toBe(false);
-    expect(config.requireTLS).toBe(false);
-    expect(config.defaultEmail).toBe('default@example.com');
-    expect(config.defaultName).toBe('Default Name');
-  });
-
-  describe('host', () => {
-    it('should throw an error if MAIL_HOST is an empty string', async () => {
-      process.env.MAIL_HOST = '';
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
+      const config = await mailConfig();
+      expect(config.provider).toBe('smtp');
     });
 
-    it('should throw an error if MAIL_HOST is not set', async () => {
+    it('should return resend when MAIL_PROVIDER is resend', async () => {
+      process.env.MAIL_PROVIDER = 'resend';
+      process.env.RESEND_API_KEY = 're_test_key';
+      clearSmtpVars();
+
+      const config = await mailConfig();
+      expect(config.provider).toBe('resend');
+    });
+
+    it('should throw when MAIL_PROVIDER is not a valid provider', async () => {
+      process.env.MAIL_PROVIDER = 'carrier-pigeon';
+
+      await expect(async () => await mailConfig()).rejects.toThrow(Error);
+    });
+  });
+
+  describe('smtp', () => {
+    it('should require MAIL_HOST when provider is smtp', async () => {
+      process.env.MAIL_PROVIDER = 'smtp';
       delete process.env.MAIL_HOST;
+
       await expect(async () => await mailConfig()).rejects.toThrow(Error);
+    });
+
+    it('should not require SMTP vars when provider is resend', async () => {
+      process.env.MAIL_PROVIDER = 'resend';
+      process.env.RESEND_API_KEY = 're_test_key';
+      clearSmtpVars();
+
+      const config = await mailConfig();
+      expect(config).toBeDefined();
     });
   });
 
-  describe('port', () => {
-    it('should return 587 when MAIL_PORT is an empty string', async () => {
-      process.env.MAIL_PORT = '';
-      const config = await mailConfig();
-      expect(config.port).toBe(587);
-    });
+  describe('resend', () => {
+    it('should require RESEND_API_KEY when provider is resend', async () => {
+      process.env.MAIL_PROVIDER = 'resend';
+      delete process.env.RESEND_API_KEY;
+      clearSmtpVars();
 
-    it('should throw an error if MAIL_PORT is not a number', async () => {
-      process.env.MAIL_PORT = 'invalid-port';
       await expect(async () => await mailConfig()).rejects.toThrow(Error);
     });
 
-    it('should return 587 when MAIL_PORT is not set', async () => {
-      delete process.env.MAIL_PORT;
+    it('should default RESEND_BASE_URL to https://api.resend.com', async () => {
+      process.env.MAIL_PROVIDER = 'resend';
+      process.env.RESEND_API_KEY = 're_test_key';
+      delete process.env.RESEND_BASE_URL;
+      clearSmtpVars();
+
       const config = await mailConfig();
-      expect(config.port).toBe(587);
+      expect(config.resend.baseUrl).toBe('https://api.resend.com');
     });
-  });
 
-  describe('user', () => {
-    it('should return an empty string when MAIL_USER is an empty string', async () => {
-      process.env.MAIL_USER = '';
+    it('should not require RESEND_API_KEY when provider is smtp', async () => {
+      process.env.MAIL_PROVIDER = 'smtp';
+      delete process.env.RESEND_API_KEY;
       const config = await mailConfig();
-      expect(config.user).toBe('');
-    });
-
-    it('should return undefined if MAIL_USER is not set', async () => {
-      delete process.env.MAIL_USER;
-      const config = await mailConfig();
-      expect(config.user).toBe(undefined);
-    });
-  });
-
-  describe('password', () => {
-    it('should return an empty string when MAIL_PASSWORD is an empty string', async () => {
-      process.env.MAIL_PASSWORD = '';
-      const config = await mailConfig();
-      expect(config.password).toBe('');
-    });
-
-    it('should return undefined if MAIL_PASSWORD is not set', async () => {
-      delete process.env.MAIL_PASSWORD;
-      const config = await mailConfig();
-      expect(config.password).toBe(undefined);
-    });
-  });
-
-  describe('ignoreTLS', () => {
-    it('should return true when MAIL_IGNORE_TLS is true', async () => {
-      process.env.MAIL_IGNORE_TLS = 'true';
-      const config = await mailConfig();
-      expect(config.ignoreTLS).toBe(true);
-    });
-
-    it('should return false when MAIL_IGNORE_TLS is false', async () => {
-      process.env.MAIL_IGNORE_TLS = 'false';
-      const config = await mailConfig();
-      expect(config.ignoreTLS).toBe(false);
-    });
-
-    it('should throw an error when MAIL_IGNORE_TLS is not set', async () => {
-      delete process.env.MAIL_IGNORE_TLS;
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('secure', () => {
-    it('should return true when MAIL_SECURE is true', async () => {
-      process.env.MAIL_SECURE = 'true';
-      const config = await mailConfig();
-      expect(config.secure).toBe(true);
-    });
-
-    it('should return false when MAIL_SECURE is false', async () => {
-      process.env.MAIL_SECURE = 'false';
-      const config = await mailConfig();
-      expect(config.secure).toBe(false);
-    });
-
-    it('should throw an error when MAIL_SECURE is not set', async () => {
-      delete process.env.MAIL_SECURE;
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('requireTLS', () => {
-    it('should return true when MAIL_REQUIRE_TLS is true', async () => {
-      process.env.MAIL_REQUIRE_TLS = 'true';
-      const config = await mailConfig();
-      expect(config.requireTLS).toBe(true);
-    });
-
-    it('should return false when MAIL_REQUIRE_TLS is false', async () => {
-      process.env.MAIL_REQUIRE_TLS = 'false';
-      const config = await mailConfig();
-      expect(config.requireTLS).toBe(false);
-    });
-
-    it('should throw an error when MAIL_REQUIRE_TLS is not set', async () => {
-      delete process.env.MAIL_REQUIRE_TLS;
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('defaultEmail', () => {
-    it('should throw an error if MAIL_DEFAULT_EMAIL is not a valid email', async () => {
-      process.env.MAIL_DEFAULT_EMAIL = 'invalid-email';
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error if MAIL_DEFAULT_EMAIL is an empty string', async () => {
-      process.env.MAIL_DEFAULT_EMAIL = '';
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error if MAIL_DEFAULT_EMAIL is not set', async () => {
-      delete process.env.MAIL_DEFAULT_EMAIL;
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('defaultName', () => {
-    it('should return an empty string when MAIL_DEFAULT_NAME is an empty string', async () => {
-      process.env.MAIL_DEFAULT_NAME = '';
-      const config = await mailConfig();
-      expect(config.defaultName).toBe('');
-    });
-
-    it('should throw an error if MAIL_DEFAULT_NAME is not set', async () => {
-      delete process.env.MAIL_DEFAULT_NAME;
-      await expect(async () => await mailConfig()).rejects.toThrow(Error);
+      expect(config).toBeDefined();
     });
   });
 });

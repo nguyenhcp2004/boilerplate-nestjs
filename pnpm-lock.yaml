@@ -74,6 +74,9 @@ importers:
       compression:
         specifier: ^1.8.0
         version: 1.8.0
+      css-inline:
+        specifier: ^0.11.2
+        version: 0.11.2
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
@@ -3037,6 +3040,10 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  css-inline@0.11.2:
+    resolution: {integrity: sha512-c/oie5Yqa2lVRwUO7A8nd3c3r0x7yE6MQH2PPB/R1LaUb6ohZD7vNXj23fod5y4QNsNhsQi98/AWfUwo1K6R7g==}
+    deprecated: This package has been renamed to @css-inline/css-inline
 
   css-select@5.1.0:
     resolution: {integrity: sha512-nwoRF1rvRRnnCqqY7updORDsuqKzqYJ28+oSMaJMMgOauh3fvwHqMS7EZpIPqK8GL+g9mKxF1vP/ZjSeNjEVHg==}
@@ -9974,6 +9981,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  css-inline@0.11.2: {}
 
   css-select@5.1.0:
     dependencies:
