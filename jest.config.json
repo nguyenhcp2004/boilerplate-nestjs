@@ -5,16 +5,10 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "collectCoverageFrom": ["**/*.(t|j)s", "!**/*.spec.(t|j)s"],
-  "coveragePathIgnorePatterns": [
-    "/node_modules/",
-    "<rootDir>/database/(factories|migrations|seeds)/",
-    "<rootDir>/main.ts",
-    "(.+).module.ts"
-  ],
-  "coverageDirectory": "../coverage",
-  "testEnvironment": "node",
   "moduleNameMapper": {
+    "^better-auth$": "<rootDir>/../test/shims/better-auth.cjs",
+    "^@better-auth/redis-storage$": "<rootDir>/../test/shims/better-auth-redis-storage.cjs",
+    "^@thallesp/nestjs-better-auth$": "<rootDir>/../test/shims/thallesp-nestjs-better-auth.cjs",
     "^@/api(.*)$": "<rootDir>/api$1",
     "^@/background(.*)$": "<rootDir>/background$1",
     "^@/common(.*)$": "<rootDir>/common$1",
@@ -33,6 +27,14 @@
     "^@/shared(.*)$": "<rootDir>/shared$1",
     "^@/utils(.*)$": "<rootDir>/utils$1"
   },
+  "coveragePathIgnorePatterns": [
+    "/node_modules/",
+    "<rootDir>/database/(factories|migrations|seeds)/",
+    "<rootDir>/main.ts",
+    "(.+).module.ts"
+  ],
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node",
   "setupFiles": ["../setup-jest.mjs"],
   "cacheDirectory": "../.jest-cache",
   "testTimeout": 120000

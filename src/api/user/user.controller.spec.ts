@@ -87,7 +87,6 @@ describe('UserController', () => {
         createUserReqDto = plainToInstance(CreateUserReqDto, {
           username: 'john',
           email: 'mail@example.com',
-          password: 'password',
           bio: 'bio',
           image: 'image',
         });
@@ -120,24 +119,6 @@ describe('UserController', () => {
         expect(errors.length).toEqual(1);
         expect(errors[0].constraints).toEqual({
           isEmail: 'email must be an email',
-        });
-      });
-
-      it('should fail with empty password', async () => {
-        createUserReqDto.password = '';
-        const errors = await validate(createUserReqDto);
-        expect(errors.length).toEqual(1);
-        expect(errors[0].constraints).toEqual({
-          minLength: 'password must be longer than or equal to 6 characters',
-        });
-      });
-
-      it('should fail with invalid password', async () => {
-        createUserReqDto.password = 'invalid-password';
-        const errors = await validate(createUserReqDto);
-        expect(errors.length).toEqual(1);
-        expect(errors[0].constraints).toEqual({
-          isPassword: 'password is invalid',
         });
       });
 

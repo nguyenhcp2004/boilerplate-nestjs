@@ -1,9 +1,8 @@
 import { AllConfigType } from '@/config/config.type';
 import { Environment } from '@/constants/app.constant';
-import { Public } from '@/decorators/public.decorator';
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckResult,
@@ -11,6 +10,7 @@ import {
   HttpHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
+import { AllowAnonymous } from '@thallesp/nestjs-better-auth';
 
 @ApiTags('health')
 @Controller('health')
@@ -22,8 +22,7 @@ export class HealthController {
     private db: TypeOrmHealthIndicator,
   ) {}
 
-  @Public()
-  @ApiOperation({ summary: 'Health check' })
+  @AllowAnonymous()
   @Get()
   @HealthCheck()
   async check(): Promise<HealthCheckResult> {

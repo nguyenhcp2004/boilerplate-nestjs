@@ -15,180 +15,68 @@ describe('AuthConfig', () => {
   });
 
   describe('secret', () => {
-    it('should return the value of AUTH_JWT_SECRET', async () => {
-      process.env.AUTH_JWT_SECRET = 'secret';
+    it('should return the value of BETTER_AUTH_SECRET', async () => {
+      process.env.BETTER_AUTH_SECRET = 'secret';
       const config = await authConfig();
       expect(config.secret).toBe('secret');
     });
 
-    it('should throw an error when AUTH_JWT_SECRET is an empty', async () => {
-      process.env.AUTH_JWT_SECRET = '';
+    it('should throw an error when BETTER_AUTH_SECRET is an empty', async () => {
+      process.env.BETTER_AUTH_SECRET = '';
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
 
-    it('should throw an error when AUTH_JWT_SECRET is not set', async () => {
-      delete process.env.AUTH_JWT_SECRET;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('expires', () => {
-    it('should return the value of AUTH_JWT_TOKEN_EXPIRES_IN', async () => {
-      process.env.AUTH_JWT_TOKEN_EXPIRES_IN = '1d';
-      const config = await authConfig();
-      expect(config.expires).toBe('1d');
-    });
-
-    it('should throw an error when AUTH_JWT_TOKEN_EXPIRES_IN is an empty', async () => {
-      process.env.AUTH_JWT_TOKEN_EXPIRES_IN = '';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_JWT_TOKEN_EXPIRES_IN is not set', async () => {
-      delete process.env.AUTH_JWT_TOKEN_EXPIRES_IN;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_JWT_TOKEN_EXPIRES_IN is not a valid ms', async () => {
-      process.env.AUTH_JWT_TOKEN_EXPIRES_IN = 'invalid';
+    it('should throw an error when BETTER_AUTH_SECRET is not set', async () => {
+      delete process.env.BETTER_AUTH_SECRET;
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
   });
 
-  describe('refreshSecret', () => {
-    it('should return the value of AUTH_REFRESH_SECRET', async () => {
-      process.env.AUTH_REFRESH_SECRET = 'secret';
+  describe('url', () => {
+    it('should return the value of BETTER_AUTH_URL', async () => {
+      process.env.BETTER_AUTH_URL = 'http://localhost:3000';
       const config = await authConfig();
-      expect(config.refreshSecret).toBe('secret');
+      expect(config.url).toBe('http://localhost:3000');
     });
 
-    it('should throw an error when AUTH_REFRESH_SECRET is an empty', async () => {
-      process.env.AUTH_REFRESH_SECRET = '';
+    it('should throw an error when BETTER_AUTH_URL is an empty', async () => {
+      process.env.BETTER_AUTH_URL = '';
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
 
-    it('should throw an error when AUTH_REFRESH_SECRET is not set', async () => {
-      delete process.env.AUTH_REFRESH_SECRET;
+    it('should throw an error when BETTER_AUTH_URL is not set', async () => {
+      delete process.env.BETTER_AUTH_URL;
+      await expect(async () => await authConfig()).rejects.toThrow(Error);
+    });
+
+    it('should throw an error when BETTER_AUTH_URL is not a valid url', async () => {
+      process.env.BETTER_AUTH_URL = 'not a url';
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
   });
 
-  describe('refreshExpires', () => {
-    it('should return the value of AUTH_REFRESH_TOKEN_EXPIRES_IN', async () => {
-      process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN = '1d';
+  describe('googleClientId', () => {
+    it('should return the value of AUTH_GOOGLE_CLIENT_ID', async () => {
+      process.env.AUTH_GOOGLE_CLIENT_ID = 'client-id';
       const config = await authConfig();
-      expect(config.refreshExpires).toBe('1d');
+      expect(config.googleClientId).toBe('client-id');
     });
 
-    it('should throw an error when AUTH_REFRESH_TOKEN_EXPIRES_IN is an empty', async () => {
-      process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN = '';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_REFRESH_TOKEN_EXPIRES_IN is not set', async () => {
-      delete process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_REFRESH_TOKEN_EXPIRES_IN is not a valid ms', async () => {
-      process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN = 'invalid';
+    it('should throw an error when AUTH_GOOGLE_CLIENT_ID is not set', async () => {
+      delete process.env.AUTH_GOOGLE_CLIENT_ID;
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
   });
 
-  describe('forgotSecret', () => {
-    it('should return the value of AUTH_FORGOT_SECRET', async () => {
-      process.env.AUTH_FORGOT_SECRET = 'secret';
+  describe('googleClientSecret', () => {
+    it('should return the value of AUTH_GOOGLE_CLIENT_SECRET', async () => {
+      process.env.AUTH_GOOGLE_CLIENT_SECRET = 'client-secret';
       const config = await authConfig();
-      expect(config.forgotSecret).toBe('secret');
+      expect(config.googleClientSecret).toBe('client-secret');
     });
 
-    it('should throw an error when AUTH_FORGOT_SECRET is an empty', async () => {
-      process.env.AUTH_FORGOT_SECRET = '';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_FORGOT_SECRET is not set', async () => {
-      delete process.env.AUTH_FORGOT_SECRET;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('forgotExpires', () => {
-    it('should return the value of AUTH_FORGOT_TOKEN_EXPIRES_IN', async () => {
-      process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN = '1d';
-      const config = await authConfig();
-      expect(config.forgotExpires).toBe('1d');
-    });
-
-    it('should throw an error when AUTH_FORGOT_TOKEN_EXPIRES_IN is an empty', async () => {
-      process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN = '';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_FORGOT_TOKEN_EXPIRES_IN is not set', async () => {
-      delete process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_FORGOT_TOKEN_EXPIRES_IN is not a valid ms', async () => {
-      process.env.AUTH_FORGOT_TOKEN_EXPIRES_IN = 'invalid';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('confirmEmailSecret', () => {
-    it('should return the value of AUTH_CONFIRM_EMAIL_SECRET', async () => {
-      process.env.AUTH_CONFIRM_EMAIL_SECRET = 'secret';
-      const config = await authConfig();
-      expect(config.confirmEmailSecret).toBe('secret');
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_SECRET is an empty', async () => {
-      process.env.AUTH_CONFIRM_EMAIL_SECRET = '';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_SECRET is not set', async () => {
-      delete process.env.AUTH_CONFIRM_EMAIL_SECRET;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-  });
-
-  describe('confirmEmailExpires', () => {
-    it('should return the value of AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN', async () => {
-      process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN = '1d';
-      const config = await authConfig();
-      expect(config.confirmEmailExpires).toBe('1d');
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is an empty', async () => {
-      process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN = '';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not set', async () => {
-      delete process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not a valid ms', async () => {
-      process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN = 'invalid';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not set', async () => {
-      delete process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not a valid ms', async () => {
-      process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN = 'invalid';
-      await expect(async () => await authConfig()).rejects.toThrow(Error);
-    });
-
-    it('should throw an error when AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN is not set', async () => {
-      delete process.env.AUTH_CONFIRM_EMAIL_TOKEN_EXPIRES_IN;
+    it('should throw an error when AUTH_GOOGLE_CLIENT_SECRET is not set', async () => {
+      delete process.env.AUTH_GOOGLE_CLIENT_SECRET;
       await expect(async () => await authConfig()).rejects.toThrow(Error);
     });
   });
