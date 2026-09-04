@@ -89,6 +89,7 @@
     "@types/ms": "^2.1.0",
     "@types/node": "^22.14.1",
     "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.23.1",
     "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",
     "@vuepress/bundler-vite": "2.0.0-rc.17",
