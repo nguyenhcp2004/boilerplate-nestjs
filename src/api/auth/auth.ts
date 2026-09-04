@@ -102,6 +102,10 @@ export function createAuth(
     },
 
     emailVerification: {
+      // Send on sign-up so local rows reach emailVerified=true — the
+      // account-linking gate (link-account.mjs:83) refuses to auto-link an
+      // OAuth identity onto an unverified local row.
+      sendOnSignUp: true,
       sendVerificationEmail: async ({ user, url }) => {
         enqueueEmail(JobName.EMAIL_VERIFICATION, user.email, url);
       },
@@ -153,6 +157,17 @@ export function createAuth(
         refreshTokenExpiresAt: 'refresh_token_expires_at',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
+      },
+      // Implicit account linking on OAuth sign-in: a user who signed up with
+      // email/password gets their google account linked automatically on the
+      // first google sign-in with the same (verified) email. google is
+      // trusted because google guarantees email_verified for its own
+      // addresses; linking still requires the local user row to have
+      // emailVerified=true (better-auth default, enforced unconditionally
+      // in the next minor — an unverified local row is never auto-linked).
+      accountLinking: {
+        enabled: true,
+        trustedProviders: ['google'],
       },
     },
     verification: {
