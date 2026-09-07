@@ -1,10 +1,25 @@
 import { type AllConfigType } from '@/config/config.type';
 import { loggingRedactPaths, LogService } from '@/constants/app.constant';
 import { ConfigService } from '@nestjs/config';
+import { type Span, trace } from '@opentelemetry/api';
 import { type IncomingMessage, type ServerResponse } from 'http';
 import { Params } from 'nestjs-pino';
-import { GenReqId, Options, type ReqId } from 'pino-http';
+import { type GenReqId, Options, type ReqId } from 'pino-http';
 import { v4 as uuidv4 } from 'uuid';
+
+// Inject active trace context into every pino log line so SigNoz can link
+// logs to traces. Returns {} when no active span — zero overhead when
+// instrumentation is disabled.
+const traceContextMixin = () => {
+  const span = trace.getActiveSpan() as Span | undefined;
+  if (!span) return {};
+  const { traceId, spanId } = span.spanContext();
+  if (!traceId || traceId === '0'.repeat(32)) return {};
+  return {
+    trace_id: traceId,
+    span_id: spanId,
+  };
+};
 
 // https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry#logseverity
 const PinoLevelToGoogleLoggingSeverityLookup = Object.freeze({
@@ -99,6 +114,7 @@ async function loggerFactory(
 
   const pinoHttpOptions: Options = {
     level: logLevel,
+    mixin: traceContextMixin,
     genReqId: isDebug ? genReqId : undefined,
     serializers: isDebug
       ? {
