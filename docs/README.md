@@ -11,6 +11,7 @@ This is a boilerplate for NestJS projects. It is a starting point for building a
 - [Testing](testing.md)
 - [Deployment](deployment.md)
 - [Technologies](technologies.md)
+- [Observability](observability.md)
 - [Troubleshooting](troubleshooting.md)
 - Convention
   - [Naming cheatsheet](conventions/naming-cheatsheet.md)
@@ -35,6 +36,7 @@ This is a boilerplate for NestJS projects. It is a starting point for building a
 - [ ] File uploads. Support local and Amazon S3 drivers.
 - [x] Swagger.
 - [x] E2E and units tests.
+- [x] Observability: distributed tracing with SigNoz / OpenTelemetry.
 - [x] Docker.
 - [x] CI (Github Actions).
 

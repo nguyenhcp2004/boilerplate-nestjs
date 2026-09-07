@@ -9,6 +9,9 @@ services:
       target: development
     env_file:
       - .env.docker
+    extra_hosts:
+      # Reach SigNoz's host-published OTLP port (4318) from the container
+      - "host.docker.internal:host-gateway"
     ports:
       - "3000:3000"
     volumes:

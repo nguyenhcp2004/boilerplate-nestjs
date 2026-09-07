@@ -5,7 +5,7 @@
 FROM node:20-alpine AS base
 
 # Install and use pnpm
-RUN npm install -g pnpm
+RUN npm install -g pnpm@9.12.3
 
 #############################
 # BUILD FOR LOCAL DEVELOPMENT

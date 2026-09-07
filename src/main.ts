@@ -1,3 +1,7 @@
+// Must be first so the OTel SDK patches modules before anything loads them.
+import { startInstrumentation } from './instrumentation';
+startInstrumentation();
+
 import {
   ClassSerializerInterceptor,
   HttpStatus,
